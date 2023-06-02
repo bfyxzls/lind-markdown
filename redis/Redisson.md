@@ -4,15 +4,13 @@ redisson 是 redis 的一款 Java 平台的客户端, 与 jedis 等客户端不�
 
 将原生的Redis [`Hash`](http://redis.cn/topics/data-types-intro.html#hashes)，[`List`](http://redis.cn/topics/data-types-intro.html#redis-lists)，[`Set`](http://redis.cn/topics/data-types-intro.html#sets)，[`String`](http://redis.cn/topics/data-types-intro.html#redis-strings)，[`Geo`](http://redis.cn/commands/geoadd.html)，[`HyperLogLog`](http://redis.cn/topics/data-types-intro.html#hyperloglogs)等数据结构封装为Java里大家最熟悉的[`映射（Map）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#71-映射map)，[`列表（List）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#77-列表list)，[`集（Set）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#73-集set)，[`通用对象桶（Object Bucket）`](https://github.com/redisson/redisson/wiki/6.-分布式对象#61-通用对象桶object-bucket)，[`地理空间对象桶（Geospatial Bucket）`](https://github.com/redisson/redisson/wiki/6.-分布式对象#62-地理空间对象桶geospatial-bucket)，[`基数估计算法（HyperLogLog）`](https://github.com/redisson/redisson/wiki/6.-分布式对象#68-基数估计算法hyperloglog)等结构
 
-除了将 redis api 进行封装, redisson 还提供了许多有用的操作, 比如分布式锁, 
+除了将 redis api 进行封装, redisson 还提供了许多有用的操作, 比如分布式锁,
 
 在这基础上还提供了分布式的[`多值映射（Multimap）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#72-多值映射multimap)，[`本地缓存映射（LocalCachedMap）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#712-本地缓存映射localcachedmap)，[`有序集（SortedSet）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#74-有序集sortedset)，[`计分排序集（ScoredSortedSet）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#75-计分排序集scoredsortedset)，[`字典排序集（LexSortedSet）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#76-字典排序集lexsortedset)，[`列队（Queue）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#78-列队queue)，[`阻塞队列（Blocking Queue）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#710-阻塞队列blocking-queue)，[`有界阻塞列队（Bounded Blocking Queue）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#711-有界阻塞列队bounded-blocking-queue)，[`双端队列（Deque）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#79-双端队列deque)，[`阻塞双端列队（Blocking Deque）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#712-阻塞双端列队blocking-deque)，[`阻塞公平列队（Blocking Fair Queue）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#713-阻塞公平列队blocking-fair-queue)，[`延迟列队（Delayed Queue）`](https://github.com/redisson/redisson/wiki/7.-分布式集合#714-延迟列队delayed-queue)，[`布隆过滤器（Bloom Filter）`](https://github.com/redisson/redisson/wiki/6.-分布式对象#67-布隆过滤器bloom-filter)，[`原子整长形（AtomicLong）`](https://github.com/redisson/redisson/wiki/6.-分布式对象#64-原子整长形atomiclong)，[`原子双精度浮点数（AtomicDouble）`](https://github.com/redisson/redisson/wiki/6.-分布式对象#65-原子双精度浮点数atomicdouble)，[`BitSet`](https://github.com/redisson/redisson/wiki/6.-分布式对象#63-bitset)等Redis原本没有的分布式数据结构。
 
 不仅如此，Redisson还实现了Redis[文档中提到](http://www.redis.cn/topics/distlock.html)像分布式锁[`Lock`](https://github.com/redisson/redisson/wiki/8.-分布式锁和同步器#81-可重入锁reentrant-lock)这样的更高阶应用场景。
 
 事实上Redisson并没有不止步于此，在分布式锁的基础上还提供了[`联锁（MultiLock）`](https://github.com/redisson/redisson/wiki/8.-分布式锁和同步器#83-联锁multilock)，[`读写锁（ReadWriteLock）`](https://github.com/redisson/redisson/wiki/8.-分布式锁和同步器#85-读写锁readwritelock)，[`公平锁（Fair Lock）`](https://github.com/redisson/redisson/wiki/8.-分布式锁和同步器#82-公平锁fair-lock)，[`红锁（RedLock）`](https://github.com/redisson/redisson/wiki/8.-分布式锁和同步器#84-红锁redlock)，[`信号量（Semaphore）`](https://github.com/redisson/redisson/wiki/8.-分布式锁和同步器#86-信号量semaphore)，[`可过期性信号量（PermitExpirableSemaphore）`](https://github.com/redisson/redisson/wiki/8.-分布式锁和同步器#87-可过期性信号量permitexpirablesemaphore)和[`闭锁（CountDownLatch）`](https://github.com/redisson/redisson/wiki/8.-分布式锁和同步器#88-闭锁countdownlatch)这些实际当中对多线程高并发应用至关重要的基本部件。正是通过实现基于Redis的高阶应用方案，使Redisson成为构建分布式系统的重要工具。
-
-
 
 # 项目集成
 
@@ -36,7 +34,39 @@ redisson 提供了 spring boot starter, [官网地址](https://github.com/rediss
 
 `redisson-spring-boot-starter` 中通过一个 `redisson-spring-data` 的模块来实现对 spring boot 不同版本的兼容, 默认使用最高版本, 目前(2021.6)是`redisson-spring-data-24`, 适用于 spring boot 2.4.x
 
+### 测试代码
+
+```java
+private String lock5Second(String orderId) {
+    //初始化锁的对象
+    RLock rLock = redissonClient.getLock("lock_" + orderId);
+    try {
+        //尝试加锁, 最多等待5秒
+        boolean lock = rLock.tryLock(20, -1, TimeUnit.SECONDS);
+        if (lock) {
+            log.info("获取到锁，执行支付流程");
+            //延时15s
+            Thread.sleep(15000);
+            log.info("支付完成");
+            return "支付完成";
+        } else {
+            log.info("请稍等，有人正在支付");
+            return "请稍等，有人正在支付";
+        }
+    } catch (InterruptedException e) {
+        log.error("获取锁异常 e:{}", e.getMessage());
+        return "获取锁异常";
+    } finally {
+        //是锁定状态，并且是当前执行线程的锁，释放锁
+        if (rLock.isLocked() && rLock.isHeldByCurrentThread()) {
+            rLock.unlock();
+        }
+    }
+}
+```
+
 如果你使用的想在旧版本的 spring boot 中使用 redisson, 你还需要将`redisson-spring-data` 替换为指定版本
+
 
 | redisson-spring-data module name | Spring Boot version |
 | -------------------------------- | ------------------- |
@@ -151,7 +181,7 @@ addressResolverGroupFactory: !<org.redisson.connection.DnsAddressResolverGroupFa
 
 对于 config 生成的内容, 可以直接添加到 `application.yml` 文件里, 放在 `spring.redis.redisson.config` 后面(注意 config 后面需要添加竖线), 如前面个的例子所示
 
-也可以将配置放置在一个独立的 yaml 文件中, 
+也可以将配置放置在一个独立的 yaml 文件中,
 
 ```yaml
 # redisson.yml
@@ -186,8 +216,3 @@ public RedissonClient redisson() {
     return Redisson.create(config);
 }
 ```
-
-
-
-
-
