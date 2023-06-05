@@ -17,8 +17,6 @@
 
 seata 的 AT 模式, 是两阶段的 补偿型事务, 通过 select for update 锁来实现隔离性
 
-
-
 # 二. seata 部署
 
 seata 需要单独部署一个事务协调者的节点, 即 seata server, 从 github 下载
@@ -85,8 +83,6 @@ store {
 }
 ```
 
-
-
 #### 应用 使用db管理事务存储
 
 ```ini
@@ -135,19 +131,13 @@ store {
 
 ### registry.conf
 
-
-
 ## client 端配置
 
 ### file.conf
 
 ### registry.conf
 
-
-
 关键在于将 DataSource 用 seata 进行托管
-
-
 
 # Seata 基本概念
 
@@ -158,8 +148,6 @@ TM: 事务的发起者, 通常是业务入口的微服务, 如果该服务连接
 TC: 事务协调者, 即独立部署的 seata-server, 支持集, 也需要自己的一个数据库来管理事务
 
 RM: 资源管理器, 数据库的入口,
-
-
 
 ## AT 模式的隔离原理
 
@@ -172,23 +160,18 @@ RM: 资源管理器, 数据库的入口,
 两个全局事务 tx1 和 tx2，分别对 a 表的 m 字段进行更新操作，m 的初始值 1000。
 
 1. tx1 先开始，开启本地事务，拿到本地锁，更新操作 `m=1000-100=900`。
-
 2. tx1 本地事务提交前，tx1 先拿到该记录的 **全局锁** ，本地提交释放本地锁。
-
 3. tx2 后开始，开启本地事务，拿到本地锁，更新操作 `m=900-100=800`。
-
 4. tx2 本地事务提交前，尝试拿该记录的**全局锁**，但此时, tx1未完成全局提交，该记录的全局锁被 tx1 持有，tx2 需要重试等待**全局锁**。
-
 5. tx1 执行二阶段, 全局提交或全局回滚
 
    - 若 tx1 执行全局提交
 
      1. tx1 二阶段全局提交，释放**全局锁** 。
-     2. tx2 拿到 **全局锁** 
+     2. tx2 拿到 **全局锁**
      3. tx2 提交本地事务, 释放本地锁。
 
      ![Write-Isolation: Commit](seata.assets/seata_at-1.png)
-
    - 若 tx1 要执行全局回滚
 
      1. 此时 tx1 持有全局锁, 但需要重新获取本地锁，以进行反向补偿的更新操作，实现分支的回滚;
@@ -220,9 +203,8 @@ RM: 资源管理器, 数据库的入口,
 
 1. 全局锁的粒度? 行锁? 表锁? 间隙锁?
 
-   通过id实现的行级锁? 非id 字段查询都被阻塞? 
-
-2. 
+   通过id实现的行级锁? 非id 字段查询都被阻塞?
+2.
 
 # 常见问题
 
@@ -234,7 +216,7 @@ http://seata.io/zh-cn/docs/overview/faq.html
 
 1. 脏读 select语句加for update，代理方法增加@GlobalLock+@Transactional或@GlobalTransaction
 2. 脏写 必须使用@GlobalTransaction
-    注：如果你查询的业务的接口没有GlobalTransactional 包裹，也就是这个方法上压根没有分布式事务的需求，这时你可以在方法上标注@GlobalLock+@Transactional 注解，并且在查询语句上加 for update。 如果你查询的接口在事务链路上外层有GlobalTransactional注解，那么你查询的语句只要加for update就行。设计这个注解的原因是在没有这个注解之前，需要查询分布式事务读已提交的数据，但业务本身不需要分布式事务。 若使用GlobalTransactional注解就会增加一些没用的额外的rpc开销比如begin 返回xid，提交事务等。GlobalLock简化了rpc过程，使其做到更高的性能。
+   注：如果你查询的业务的接口没有GlobalTransactional 包裹，也就是这个方法上压根没有分布式事务的需求，这时你可以在方法上标注@GlobalLock+@Transactional 注解，并且在查询语句上加 for update。 如果你查询的接口在事务链路上外层有GlobalTransactional注解，那么你查询的语句只要加for update就行。设计这个注解的原因是在没有这个注解之前，需要查询分布式事务读已提交的数据，但业务本身不需要分布式事务。 若使用GlobalTransactional注解就会增加一些没用的额外的rpc开销比如begin 返回xid，提交事务等。GlobalLock简化了rpc过程，使其做到更高的性能。
 
 ### Q: 5.脏数据回滚失败如何处理?
 
@@ -250,12 +232,12 @@ http://seata.io/zh-cn/docs/overview/faq.html
 ### Q: 10.为什么mybatis没有返回自增ID?
 
 **A:** 方案1.需要修改mybatis的配置: 在`@Options(useGeneratedKeys = true, keyProperty = "id")`或者在xml中指定useGeneratedKeys 和 keyProperty属性
- 方案2.删除undo_log表的id字段
+方案2.删除undo_log表的id字段
 
 ### Q: 12.TC如何使用mysql8?
 
 **A:** 1.修改file.conf的驱动配置store.db.driver-class-name;  2.lib目录下删除mysql5驱动,添加mysql8驱动
- ps: oracle同理;1.2.0支持mysql驱动多版本隔离，无需再添加驱动
+ps: oracle同理;1.2.0支持mysql驱动多版本隔离，无需再添加驱动
 
 ### Q: 14.使用HikariDataSource报错如何解决?
 
