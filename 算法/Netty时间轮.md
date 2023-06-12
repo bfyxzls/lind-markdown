@@ -14,6 +14,31 @@
 
 ![](./assets/时间轮-1685669256790.png)
 
+![](./assets/Netty时间轮-1686303830062.png)
+
+# Netty时间轮的优势
+
+`HashedWheelTimer` 是 Netty 框架中提供的一个基于时间轮算法的定时器实现,具有一些优势：
+
+1. 高性能：`HashedWheelTimer` 在设计上采用了哈希表来存储时间轮槽，通过哈希函数将任务均匀地分布在不同的槽中。这种设计可以使得定时器的性能更好，即使在有大量任务的情况下，仍能保持较低的延迟和高效的任务执行。
+2. 线程安全：`HashedWheelTimer` 在内部实现中使用了各种并发数据结构和同步机制，保证了在多线程环境下的线程安全性。
+3. 高可靠性：`HashedWheelTimer` 具备任务调度的高可靠性。它在内部使用了堆外内存进行任务管理，即使在应用程序异常退出或内存回收的情况下，已经加入时间轮但尚未执行的任务也能得到恢复和执行。
+4. 高度可配置：`HashedWheelTimer` 提供了丰富的配置选项，允许你根据具体需求调整定时器的精度、时间轮槽的数量、任务执行线程池等参数。
+5. 功能丰富：除了基本的定时任务执行，`HashedWheelTimer` 还支持延迟任务和周期性任务的调度。
+
+总之，Netty 的 `HashedWheelTimer` 是一个经过优化和高度可配置的时间轮实现，具备高性能、高可靠性和线程安全等优势。如果你使用 Netty 框架或需要一个高性能的定时器，那么 `HashedWheelTimer` 是一个很好的选择。
+
+# 下面开源的组件都用到了HashedWheelTimer
+
+以下是一些开源项目中使用了 Netty 的 `HashedWheelTimer` 组件的例子：
+
+1. Elasticsearch：Elasticsearch 是一个开源的分布式搜索和分析引擎，它在内部使用了 Netty 的 `HashedWheelTimer` 来进行任务调度和超时处理。
+2. RocketMQ：RocketMQ 是一个开源的分布式消息队列系统，它使用了 Netty 的 `HashedWheelTimer` 来处理定时任务和超时任务。
+3. Dubbo：Dubbo 是一个高性能的 Java RPC 框架，它使用了 Netty 的 `HashedWheelTimer` 来进行定时任务调度和超时处理。
+4. Apache Cassandra：Cassandra 是一个开源的分布式 NoSQL 数据库系统，它在内部使用了 Netty 的 `HashedWheelTimer` 来进行定时任务和超时任务的处理。
+
+这只是一小部分使用了 Netty 的 `HashedWheelTimer` 的开源项目示例，实际上，`HashedWheelTimer` 在很多需要高性能定时任务调度的系统中被广泛使用。由于 Netty 的高性能和可靠性，它成为许多开源项目中的首选框架之一。如果你对特定项目是否使用了 `HashedWheelTimer` 感兴趣，可以进一步探索该项目的源代码或文档，以了解更多细节。
+
 # 时间轮的使用
 
 这里使用的时间轮是Netty这个包中提供的，使用方法比较简单。
@@ -78,17 +103,17 @@ public void expireTimeouts(long deadline) {
 // process all timeouts  
 while (timeout != null) {   
  HashedWheelTimeout next = timeout.next;  
-if (timeout.remainingRounds <= 0) {     
- next = remove(timeout);     
- if (timeout.deadline <= deadline) {          
-    timeout.expire();    
+if (timeout.remainingRounds <= 0) {   
+ next = remove(timeout);   
+ if (timeout.deadline <= deadline) {        
+    timeout.expire();  
   } else { 
     // The timeout was placed into a wrong slot. This should never happen.
-    throw new IllegalStateException(String.format("timeout.deadline (%d) > deadline (%d)", timeout.deadline, deadline));     
+    throw new IllegalStateException(String.format("timeout.deadline (%d) > deadline (%d)", timeout.deadline, deadline));   
  } 
 } else if (timeout.isCancelled()) {
           next = remove(timeout);   
- } else {      
+ } else {    
    timeout.remainingRounds --;   
  } 
   timeout = next;  
@@ -210,10 +235,10 @@ start方法会根据当前的workerState状态来启动时间轮。并且用了s
 public void start() {   
  //workerState一开始的时候是0（WORKER_STATE_INIT），然后才会设置为1（WORKER_STATE_STARTED）  
 switch (WORKER_STATE_UPDATER.get(this)) {  
-    case WORKER_STATE_INIT:    
+    case WORKER_STATE_INIT:  
       if (WORKER_STATE_UPDATER.compareAndSet(this, WORKER_STATE_INIT, WORKER_STATE_STARTED)) {   
-           workerThread.start();     
-       }        
+           workerThread.start();   
+       }      
       break;   
      case WORKER_STATE_STARTED:
         break;
@@ -225,7 +250,7 @@ switch (WORKER_STATE_UPDATER.get(this)) {
   // 等待worker线程初始化时间轮的启动时间   
  while (startTime == 0) {  
   try {   
-         //这里使用countDownLauch来确保调度的线程已经被启动       
+         //这里使用countDownLauch来确保调度的线程已经被启动     
          startTimeInitialized.await();   
      } catch (InterruptedException ignore) {
       // Ignore - it will be ready very soon.
@@ -251,16 +276,16 @@ public void run() {
    do {        //返回每tick一次的时间间隔  
   final long deadline = waitForNextTick(); 
   if (deadline > 0) {   
- //计算时间轮的槽位    
+ //计算时间轮的槽位  
  int idx = (int) (tick & mask);  
- //移除掉CancelledTask        
+ //移除掉CancelledTask      
   processCancelledTasks();   
  //得到当前指针位置的时间槽   
- HashedWheelBucket bucket =wheel[idx];    
+ HashedWheelBucket bucket =wheel[idx];  
  //将newTimeout()方法中加入到待处理定时任务队列中的任务加入到指定的格中
- transferTimeoutsToBuckets();       
- //运行目前指针指向的槽中的bucket链表中的任务        
- bucket.expireTimeouts(deadline);        
+ transferTimeoutsToBuckets();     
+ //运行目前指针指向的槽中的bucket链表中的任务      
+ bucket.expireTimeouts(deadline);      
  tick++;   
   }   
  } while (WORKER_STATE_UPDATER.get(HashedWheelTimer.this) == WORKER_STATE_STARTED);
@@ -270,10 +295,10 @@ public void run() {
            bucket.clearTimeouts(unprocessedTimeouts); 
 //清除时间轮中不需要处理的任务  
 }  
-  for (; ; ) {    
- //遍历任务队列，发现如果有任务被取消，则添加到unprocessedTimeouts,也就是不需要处理的队列中。    
+  for (; ; ) {  
+ //遍历任务队列，发现如果有任务被取消，则添加到unprocessedTimeouts,也就是不需要处理的队列中。  
  HashedWheelTimeout timeout = timeouts.poll();   
- if (timeout == null) {       
+ if (timeout == null) {     
  break;        }   
  if (!timeout.isCancelled()) {   
          unprocessedTimeouts.add(timeout);  
@@ -296,17 +321,17 @@ private long waitForNextTick() {
  //计算当前时间距离启动时间的时间间隔   
  final long currentTime = System.nanoTime() - startTime;   
  //通过下一次指针跳动的延迟时间距离当前时间的差额，这个作为sleep时间使用。   
- // 其实线程是以睡眠一定的时候再来执行下一个ticket的任务的    
+ // 其实线程是以睡眠一定的时候再来执行下一个ticket的任务的  
 long sleepTimeMs = (deadline - currentTime + 999999) / 1000000;   
  //sleepTimeMs小于零表示走到了下一个时间槽位置   
  if (sleepTimeMs <= 0) {   
        if (currentTime == Long.MIN_VALUE) {  
               return -Long.MAX_VALUE;  
-      } else {        
+      } else {      
     return currentTime;   
        }  
       } 
-       if (isWindows()) {     
+       if (isWindows()) {   
     sleepTimeMs = sleepTimeMs / 10 * 10;   
      }  
       //进入到这里进行sleep，表示当前时间距离下一次tick时间还有一段距离，需要sleep。
@@ -340,19 +365,19 @@ private void transferTimeoutsToBuckets() {
        break;   
    }
 if (timeout.state() == HashedWheelTimeout.ST_CANCELLED) {
-  // Was cancelled in the meantime.       
+  // Was cancelled in the meantime.     
  continue;   
  }   
-//计算tick次数，deadline表示当前任务的延迟时间，tickDuration表示时间槽的间隔，两者相除就可以计算当前任务需要tick几次才能被执行    
-long calculated = timeout.deadline / tickDuration;     
-// 计算剩余的轮数, 只有 timer 走够轮数, 并且到达了 task 所在的 slot, task 才会过期.(被执行)    
+//计算tick次数，deadline表示当前任务的延迟时间，tickDuration表示时间槽的间隔，两者相除就可以计算当前任务需要tick几次才能被执行  
+long calculated = timeout.deadline / tickDuration;   
+// 计算剩余的轮数, 只有 timer 走够轮数, 并且到达了 task 所在的 slot, task 才会过期.(被执行)  
 timeout.remainingRounds = (calculated - tick) / wheel.length;   
- //如果任务在timeouts队列里面放久了, 以至于已经过了执行时间, 这个时候就使用当前tick, 也就是放到当前bucket, 此方法调用完后就会被执行    
-final long ticks = Math.max(calculated, tick);    
-// 算出任务应该插入的 wheel 的 slot, stopIndex = tick 次数 & mask, mask = wheel.length - 1    
-int stopIndex = (int) (ticks & mask);    
+ //如果任务在timeouts队列里面放久了, 以至于已经过了执行时间, 这个时候就使用当前tick, 也就是放到当前bucket, 此方法调用完后就会被执行  
+final long ticks = Math.max(calculated, tick);  
+// 算出任务应该插入的 wheel 的 slot, stopIndex = tick 次数 & mask, mask = wheel.length - 1  
+int stopIndex = (int) (ticks & mask);  
 //把timeout任务插入到指定的bucket链中。   
- HashedWheelBucket bucket = wheel[stopIndex];    
+ HashedWheelBucket bucket = wheel[stopIndex];  
  bucket.addTimeout(timeout);  
 }
 }
@@ -373,7 +398,7 @@ void expireTimeouts(long deadline) {
    while (timeout != null) {  
       HashedWheelTimeout next = timeout.next;  
     //如果当前任务要被执行，那么remainingRounds应该小于或者等于0  
-    if (timeout.remainingRounds <= 0) {    
+    if (timeout.remainingRounds <= 0) {  
     //从bucket链表中移除当前timeout，并返回链表中下一个timeout   
        next = remove(timeout);   
        //如果timeout的时间小于当前的时间，那么就调用expire执行task   
@@ -381,9 +406,9 @@ void expireTimeouts(long deadline) {
            timeout.expire();  
         } else {
          //不可能发生的情况，就是说round已经为0了，deadline却>当前槽的deadline 
-        // The timeout was placed into a wrong slot. This should never happen.           
+        // The timeout was placed into a wrong slot. This should never happen.         
     throw new IllegalStateException(
-        String.format("timeout.deadline (%d) > deadline (%d)", timeout.deadline, deadline));        
+        String.format("timeout.deadline (%d) > deadline (%d)", timeout.deadline, deadline));      
 }
  } else if (timeout.isCancelled()) { 
            next = remove(timeout);
