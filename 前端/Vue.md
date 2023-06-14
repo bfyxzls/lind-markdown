@@ -3181,7 +3181,7 @@ $ vue create project-name
 ├── .gitignore           # （配置）在上传中需被 Git 忽略的文件（夹）
 ├── package.json         # 本项目的配置信息，启动方式
 ├── package-lock.json    # 记录当前状态下实际安装的各个npm package的具体来源和版本号
-├── README.md            # 项目说明（很重要，便于其他人看懂）
+├── 算法网址.md            # 项目说明（很重要，便于其他人看懂）
 ```
 
 ## 3. vue 单文件组件
