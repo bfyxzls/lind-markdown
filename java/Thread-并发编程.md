@@ -571,7 +571,7 @@ A 从await处恢复，因此要将await操作放在while块中，以便循环检
 
 每个对象都有一个内部锁, 等价于进入方法时获取内部锁，结束方法时释放锁
 
-只有一个条件，通过继承自 Object 类的 wait 方法进入条件阻塞，notify 方法解除阻塞
+只有一个条件，通过继承自 Object 类的 `wait` 方法进入条件阻塞，`notify` 方法解除阻塞
 
 用于实例方法时，相当于每个对象有一个内部锁
 
@@ -579,9 +579,9 @@ A 从await处恢复，因此要将await操作放在while块中，以便循环检
 
 原型模式service的synchronized方法无效?
 
-lock 和 condition
+## lock 和 condition
 
-synchronized 的局限性
+### synchronized 的局限性
 
 - 不能中断一个正在试图获得锁的线程
 - 试图获得锁时不能设定超时
@@ -589,6 +589,16 @@ synchronized 的局限性
 
 通常不建议使用锁+条件，也不建议使用`synchronized`，而是使用 `concurrent` 包
 
+### 对上面一句话的解释
+这句话是在讨论并发编程中选择合适的同步机制时给出的建议。让我们逐步解释它的含义：
+
+1. 不建议使用锁+条件：指的是使用传统的Java并发编程中的锁（如`Lock`接口的实现类）和条件（`Condition`）来进行线程间的同步。这种方式需要手动管理锁和条件，编写的代码相对复杂，容易引入死锁和竞态条件等问题。
+
+2. 不建议使用`synchronized`：指的是在Java中使用`synchronized`关键字进行同步。虽然`synchronized`简单易用，但它是一种粗粒度的同步机制，它会对整个方法或代码块进行加锁，可能会导致性能问题。此外，`synchronized`关键字不支持一些高级的同步操作，如读写锁和条件等。
+
+3. 建议使用`concurrent`包：指的是使用Java并发包中提供的`concurrent`工具类和线程安全的数据结构来实现线程间的同步和协作。`concurrent`包提供了丰富的并发工具，如`Lock`、`ReadWriteLock`、`Semaphore`、`CountDownLatch`等，以及线程安全的集合类如`ConcurrentHashMap`、`CopyOnWriteArrayList`等。这些工具和数据结构能够更好地支持并发编程，并提供更好的性能和灵活性。
+
+总的来说，建议使用`concurrent`包中提供的并发工具类和线程安全的数据结构来实现线程间的同步和协作。这些工具类和数据结构经过优化，能够更好地满足并发编程的需求，并且具有更好的性能和可伸缩性。同时，使用`concurrent`包也能够避免手动管理锁和条件所带来的复杂性和潜在的问题。
 ### 客户端锁定
 
 在客户端代码中获取目标对象的锁，以实现只有当前线程能修改目标对象。
@@ -783,152 +793,6 @@ public final int getAndAddInt(Object target, long offset, int delta) {
 - `LinkedBlockingQueue`, 没有上限的阻塞队列
 - `ArrayBlockingQueue`, 初始化时指定队列容量
 - `PriorityBlockingQueue`, 带优先级的队列, 不是先进先出队列
-
-## ForkJion框架
-
-ForkJoin 是 JDK 1.7 后发布的多线程并发处理框架，功能上和 JUC 类似，JUC 更多时候是使用单个类完成操作，ForkJoin 使用多个类同时完成某项工作，处理上比 JUC 更加丰富，实际开发中使用的场景并不是很多，互联网公司真正有高并发需求的情况才会使用。
-
-本质上是对线程池的一种的补充，对线程池功能的一种扩展，基于线程池的，它的**核心思想就是将一个大型的任务拆分成很多个小任务，分别执行，最终将小任务的结果进行汇总，生成最终的结果**。
-
-![image.png](assets/image5.png)
-
-> 本质就是把一个线程的任务拆分成多个小任务，然后由多个线程并发执行，最终将结果进行汇总。
-
-比如 A B 两个线程同时还执行，A 的任务比较多，B 的任务相对较少，B 先执行完毕，这时候 B 去帮助 A 完成任务（将 A 的一部分任务拿过来替 A 执行，执行完毕之后再把结果进行汇总），从而提高效率。
-
-## ForkJoin 框架，核心是两个类
-
-* ForkJoinTask （描述任务）
-* ForkJoinPool（线程池）提供多线程并发工作窃取
-
-使用 ForkJoinTask 最重要的就是要搞清楚如何拆分任务，这里用的是递归思想。
-1、需要创建一个 ForkJoinTask 任务，ForkJoinTask 是一个抽象类，不能直接创建 ForkJoinTask 的实例化对象，开发者需要自定义一个类，
-继承 ForkJoinTask 的子类 RecursiveTask ，Recursive 就是递归的意思，该类就提供了实现递归的功能。
-![](./assets/并发-1685692899603.png)
-
-```java
-import java.util.concurrent.RecursiveTask;
-
-/**
- * 10亿求和
- */
-public class ForkJoinDemo extends RecursiveTask<Long> {
-
-    private Long start;
-    private Long end;
-    private Long temp = 100_0000L;
-
-    public ForkJoinDemo(Long start, Long end) {
-        this.start = start;
-        this.end = end;
-    }
-
-    @Override
-    protected Long compute() {
-        if((end-start)<temp){
-            Long sum = 0L;
-            for (Long i = start; i <= end; i++) {
-                sum += i;
-            }
-            return sum;
-        }else{
-            Long avg = (start+end)/2;
-            ForkJoinDemo task1 = new ForkJoinDemo(start,avg);
-            task1.fork();
-            ForkJoinDemo task2 = new ForkJoinDemo(avg,end);
-            task2.fork();
-            return task1.join()+task2.join();
-        }
-    }
-}
-```
-
-测试上面的代码
-
-```java
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-
-public class Test {
-    public static void main(String[] args) {
-        Long startTime = System.currentTimeMillis();
-        ForkJoinPool forkJoinPool = new ForkJoinPool();
-        ForkJoinTask<Long> task = new ForkJoinDemo(0L,10_0000_0000L);
-        forkJoinPool.execute(task);
-        Long sum = 0L;
-        try {
-            sum = task.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        Long endTime = System.currentTimeMillis();
-        System.out.println(sum+"，供耗时"+(endTime-startTime));
-    }
-}
-```
-
-是的，你可以使用 ForkJoinPool 来处理一个大的 List 对象，并一次返回所有处理结果。这里提供一个示例，假设你有一个需要处理的 List 对象，其中的元素是 `String` 类型，你需要将所有字符串转换为大写并返回结果。示例代码如下：
-
-```
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveTask;
-
-public class UppercaseTask extends RecursiveTask<List<String>> {
-    private static final int THRESHOLD = 10;
-    private List<String> list;
-    private int start;
-    private int end;
-
-    public UppercaseTask(List<String> list, int start, int end) {
-        this.list = list;
-        this.start = start;
-        this.end = end;
-    }
-
-    @Override
-    protected List<String> compute() {
-        if (end - start <= THRESHOLD) {
-            List<String> results = new ArrayList<>(end - start + 1);
-            for (int i = start; i <= end; i++) {
-                String str = list.get(i).toUpperCase();
-                results.add(str);
-            }
-            return results;
-        } else {
-            int mid = start + (end - start) / 2;
-            UppercaseTask leftTask = new UppercaseTask(list, start, mid);
-            UppercaseTask rightTask = new UppercaseTask(list, mid + 1, end);
-            leftTask.fork();
-            rightTask.fork();
-            List<String> leftResult = leftTask.join();
-            List<String> rightResult = rightTask.join();
-            leftResult.addAll(rightResult);
-            return leftResult;
-        }
-    }
-
-    public static void main(String[] args) {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            list.add("String_" + i);
-        }
-
-        ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
-        UppercaseTask uppercaseTask = new UppercaseTask(list, 0, list.size() - 1);
-        List<String> results = forkJoinPool.invoke(uppercaseTask);
-        System.out.println(results);
-    }
-}
-```
-
-上述代码中，我们定义了一个 `UppercaseTask` 类，继承 `RecursiveTask` 类，任务是将指定范围内的 List 中的所有 String 转换为大写。如果任务量小于 THRESHOLD，就顺序处理，否则就将任务划分为两个子任务，分别处理子任务中的 List，最后将子任务的处理结果合并。
-
-在 main() 方法中，我们创建了一个 List 对象，填充一些字符串，然后创建一个 ForkJoinPool 对象，调用 invoke() 方法执行 `UppercaseTask` 对象，得到处理结果，返回的是一个 List 对象，其中包含了所有元素转换为大写后的值。这里需要注意的是，最好在主线程中创建 ForkJoinPool 实例，避免在 ForkJoinPool 中出现线程的上下文切换，从而提高效率。
 
 # Volatile 关键字
 
