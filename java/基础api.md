@@ -50,8 +50,6 @@ BigDecimal 用 `compareTo == 0`
 - replace
 - replaceAll
 
-
-
 # Object
 
 ## 常用方法
@@ -59,8 +57,6 @@ BigDecimal 用 `compareTo == 0`
 - hashCode
 - equals
 - toString
-
-
 
 # 日期操作
 
@@ -75,6 +71,3 @@ System.nanoTime()
 ## LocalTime
 
 ## SimpleDateFormat
-
-
-
