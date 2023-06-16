@@ -1,0 +1,16 @@
+|分类|简介|
+|-|-|
+|[Python基础](./python_basic/main.md)|python常用小知识点，目录监控，文件处理，日志等......|
+|[Python进阶](./python_advance/main.md)|python网络编程socket，多线程，多进程，装饰器，面向对象等......|
+|[Linux相关](./linux/main.md)|linux常用操作命令，vim，环境安装部署等......|
+|[Python数据分析](./data_analysis/main.md)|《深入浅出统计学》,numpy,pandas基础概念及练习等......|
+|[Python爬虫](./spiders/main.md)|python爬虫基础库requests，beautifulsoup，xpath，selenium，代理池，部分网站爬虫等......|
+|[计算机网络基础](./network_protocol/main.md)|网络基础知识，tcp/ip协议与http协议等......|
+|[LeetCode-数组](./leetcode_array/main.md)|leetcode数组类，字符串类算法练习|
+|[LeetCode-链表](./leetcode_linked_list/main.md)|leetcode链表类算法练习|
+|[LeetCode-哈希表](./leetcode_hash/main.md)|leetcode哈希表类算法练习|
+|[LeetCode-栈+队列](./leetcode_stack/main.md)|leetcode栈+队列类算法练习|
+|[LeetCode-二叉树](./leetcode_tree/main.md)|leetcode二叉树类算法练习|
+|[LeetCode-其他](./leetcode_others/main.md)|leetcode其他分类算法练习|
+|[Django学习](./django_note/main.md)|Django学习笔记。|
+|[其他](./others/main.md)|redis，kafka，ZeroMQ等|

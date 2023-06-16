@@ -49,8 +49,6 @@ F
 java/jgroups.md,2\d\2df3de6d9b963a609ed26db6dc97897b5de83195
 =
 java/guava.md,a\8\a8b0d0a79eb7313669858d179ce0b3a58a02afb4
-?
-java/HashMap.md,2\0\20efab021932d3150825eee3ba63d61d6284b19a
 ;
 java/JVM.md,5\3\530a7c7aa773956116d25f5abdee07e775899be4
 ]
@@ -67,8 +65,6 @@ Q
 !数据库/Mysql高可用集群.md,5\7\57a7362f8ca23f24a15027e81c07bf599469c6a3
 M
 数据库/HAProxy的部署.md,3\b\3be921f1878e0968067b587e5636b352809bbaf5
-I
-python/打包与发布.md,7\5\7527778ef245b3adde43aa515b4292681e67a536
 O
 golang/Go 语言参考手册.md,d\9\d90b26505f1adf9d5e3adfad19ce75f4afaed4a5
 M
@@ -95,8 +91,6 @@ D
 spring/SprintBean.md,0\1\014d8dd557522cbaa9c5080abc676c8918f81fd3
 C
 算法/红包雨.md,d\0\d0ee3047f1bc5f97ba1b00322bf508e2f8610f48
-D
-java/集合框架.md,d\b\db7d2c8382487ef4b296ca28e51acff2301abd6c
 R
 "java/Thread-KeyAffinityExecutor.md,9\7\974ebc0858aa8d2c92105ee73481235f45eb8442
 K
