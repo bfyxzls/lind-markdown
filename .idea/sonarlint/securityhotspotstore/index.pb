@@ -35,8 +35,6 @@ U
 %spring/获取当前认证的用户.md,5\8\58317321c6ba2c6fefa0870b74c6961523182010
 P
  keycloak/keycloak安全保护.md,f\3\f3c43546f1a57f2f6103ef135d99a171a8fad5e4
-G
-java/无符号类型.md,9\0\902d12fdd1aaa56b13de3e89427fc3ac8ccac73d
 L
 keycloak/infinispan-cache.md,0\5\05b39ad995a30c3a11a6b133ea5914fe62385790
 a
@@ -45,12 +43,6 @@ C
 算法/位运算.md,0\1\01a646bc4fb7d80047940cdb8886bca9bcdcdd58
 F
 算法/负载均衡.md,6\6\668aad9505cc83c155d95228471e5380b6d0b3f3
-?
-java/jgroups.md,2\d\2df3de6d9b963a609ed26db6dc97897b5de83195
-=
-java/guava.md,a\8\a8b0d0a79eb7313669858d179ce0b3a58a02afb4
-;
-java/JVM.md,5\3\530a7c7aa773956116d25f5abdee07e775899be4
 ]
 -keycloak/Keycloak安全防御_暴力检查.md,d\d\ddfcf01990adeeb1b2df0f50c0fdd3a3ac8dda8a
 F
@@ -81,8 +73,6 @@ F
 其它语言/groovy.md,d\d\ddc08b861bdec36186b3072611ce3df3775561aa
 G
 其它语言/kubectl.md,9\d\9dadb9bae571fca5e30170975fe5f2eed67019ae
-G
-java/线程安全性.md,7\d\7d9fae8c4c991a90922fd5b70993fcf6d851bacd
 H
 算法/Netty时间轮.md,b\a\ba033b8c2c8b3b0a745d244cb1b0b38bc2704459
 9
@@ -91,15 +81,57 @@ D
 spring/SprintBean.md,0\1\014d8dd557522cbaa9c5080abc676c8918f81fd3
 C
 算法/红包雨.md,d\0\d0ee3047f1bc5f97ba1b00322bf508e2f8610f48
-R
-"java/Thread-KeyAffinityExecutor.md,9\7\974ebc0858aa8d2c92105ee73481235f45eb8442
-K
-java/Thread-并发编程.md,1\3\13afa1d5b56548be77235c4f955c8a3515cbbf03
-E
-java/Thread-并行.md,b\4\b4fd601a6a6f62aa96aa3e20aec82afbe7516a51
-A
-java/基础api.md,0\b\0bdebc4bd8850b0358f7a7c5e341f40a44fde35d
-O
-java/接口,内部类,lambda.md,1\0\10a2fc135908adc106da659a9291b1da89d972e2
-G
-java/正则表达式.md,1\5\1539823a5664b0c4a315025b4557eac26666d239
+Q
+!java/基础编程/集合框架.md,e\7\e76a395a56def89a6e66663095fc372b694e3127
+P
+ keycloak/fluentd从kafka到es.md,f\2\f2a5ed8e8d49213b409038b416abc45e94cb344c
+W
+'mq/Kafka/Apache-Kafka安装和使用.md,3\f\3f1704fe1b0a46018f2fbe19152b303d4ead7746
+V
+&大数据/Flink/6-Flink重启策略.md,4\d\4d599f88e44bf87311156bfdc220b53bf4352083
+V
+&大数据/Flink/8-Flink中的窗口.md,c\7\c7249068ede50c547fe425b41e1690a51515b5ec
+Y
+)大数据/zookeeeper/zk安装和运行.md,c\0\c06533a53bf9b8c4159c02cf900b6f1f7b0b5c3a
+c
+3分布式理论/分布式ID生成器解决方案.md,2\4\243d4df399f9e36d9499c22c1ac21f159911cce2
+d
+4大数据/面试系列/Flume面试题整理/Flume.md,4\e\4ee8ea28fbcae0a0562c46ac53ac36325727f0ab
+g
+7mq/Kafka/Apache-Kafka核心组件和流程-协调器.md,9\e\9e1be13d999b14c0ffe0b26655293c5f8338026c
+B
+mq/消息队列.md,d\5\d5f93bc6a11c3ee91f5880dc1a6b96fc51df83ef
+\
+,大数据/hbase/5W1H全景洞察大数据.md,c\0\c0ad626adf31e5daebe1b8fc118468c3a42758fa
+g
+7大数据/hbase/HBase 在人工智能场景的使用.md,3\8\38f9bf4c89401cc73b47fc7a3e69bcace1eaedab
+{
+Kddd/2019-10-15-DDD专题案例一《初识领域驱动设计DDD落地》.md,a\2\a26845a762f077cee2b54153f9510cb189b6e309
+u
+Eddd/2021-02-28-工作两三年，整不明白架构图都画啥？.md,d\5\d545e4cb3a1a4eb2a09b6147374092ebcc7bacaf
+�
+Qjava/基础编程/2019-12-10-[有点干货]Jdk1.8新特性实战篇41个案例.md,1\c\1c5408a4470354c9200f2e32c4a889497e46632b
+F
+python/面试文档.md,9\8\98006694d15d2f59aad393b5e009cc3b6fbbb490
+�
+mspring/源码阅读/2019-12-25-[源码分析]Mybatis接口没有实现类为什么可以执行增删改查.md,5\a\5a7ede3c57f871d737c1633e7555dd06090af119
+�
+cspring/源码阅读/2020-01-01-[源码解析]Spring定时任务Quartz执行全过程源码解读.md,e\2\e25ba021448b661c65421ef42e9e8ac946f8c2f0
+�
+pspring/源码阅读/2020-01-08-[源码分析]像盗墓一样分析Spring是怎么初始化xml并注册bean的.md,c\b\cb688697e6fd97755d766cb4c9dd07938395f844
+�
+Sspring/develop-mybatis/2022-03-27-第2章：创建简单的映射器代理工厂.md,d\7\d76ad38679373129df5fced16233befc4b885a7b
+�
+Sjava/java集合/大数据成神之路-Java高级特性增强(ArrayBlockingQueue).md,2\e\2ecd84f8d44fd0e19c0a264f773bc64055337b05
+�
+Rjava/java集合/大数据成神之路-Java高级特性增强(ConcurrentHashMap).md,3\1\31845be97f7bdaba9fe626ea0fb2ab671197242f
+�
+Vjava/java集合/大数据成神之路-Java高级特性增强(ConcurrentLinkedQueue).md,7\6\7664fa02549f15d382b2b2a168dad3683a5f8aae
+�
+Vjava/java集合/大数据成神之路-Java高级特性增强(ConcurrentSkipListSet).md,9\d\9da90fec621af22135c3be11a312a73dbdb063a3
+�
+Vjava/java集合/大数据成神之路-Java高级特性增强(ConcurrentSkipListMap).md,a\b\abed5a679cc5de907990f9b926e8a65407ae7e55
+�
+Ujava/java集合/大数据成神之路-Java高级特性增强(CopyOnWriteArrayList).md,2\6\2605dab43977c33dc4ed518c124847af1d73fba6
+e
+5java/java高级编程/Java NIO之Buffer(缓冲区).md,1\8\18c011cd050ffa1622679fd3eb9bd015287e2cb9
