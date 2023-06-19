@@ -1,4 +1,5 @@
 ### **Java高级特性增强-并发容器**
+
 本部分网络上有大量的资源可以参考，在这里做了部分整理并做了大量勘误，感谢前辈的付出，每节文章末尾有引用列表~
 ####**多线程**
 ###**集合框架**
@@ -6,10 +7,12 @@
 ###**Java并发容器**
 
 ### ConcurrentLinkedQueue介绍
+
 ConcurrentLinkedQueue是线程安全的队列，它适用于“高并发”的场景。
 它是一个基于链接节点的无界线程安全队列，按照 FIFO（先进先出）原则对元素进行排序。队列元素中不可以放置null元素（内部实现的特殊节点除外）。
 
 ### ConcurrentLinkedQueue原理和数据结构
+
 ConcurrentLinkedQueue的数据结构，如下图所示：![2c9f34f0d8819f5a0c03ecbe99b7ca82](大数据成神之路-Java高级特性增强(ConcurrentLinkedQueue).resources/2C447958-48AF-4B02-A30E-52AA0038497C.jpg)
 说明：
 
@@ -48,25 +51,31 @@ Object[] toArray()
 // 返回以恰当顺序包含此队列所有元素的数组；返回数组的运行时类型是指定数组的运行时类型。
 <T> T[] toArray(T[] a)
 ```
+
 ### ConcurrentLinkedQueue源码分析
 
 下面从ConcurrentLinkedQueue的创建，添加，删除这几个方面对它进行分析。
 **1 创建**
 下面以ConcurrentLinkedQueue()来进行说明。
+
 ```
 public ConcurrentLinkedQueue() {
     head = tail = new Node<E>(null);
 }
 ```
+
 说明：在构造函数中，新建了一个“内容为null的节点”，并设置表头head和表尾tail的值为新节点。
 
 head和tail的定义如下：
+
 ```
 private transient volatile Node<E> head;
 private transient volatile Node<E> tail;
 ```
+
 head和tail都是volatile类型，他们具有volatile赋予的含义：“即对一个volatile变量的读，总是能看到（任意线程）对这个volatile变量最后的写入”。
 Node的声明如下：
+
 ```
 private static class Node<E> {
     volatile E item;
@@ -107,9 +116,9 @@ private static class Node<E> {
     }
 }
 ```
+
 说明：
 Node是个单向链表节点，next用于指向下一个Node，item用于存储数据。Node中操作节点数据的API，都是通过Unsafe机制的CAS函数实现的；例如casNext()是通过CAS函数“比较并设置节点的下一个节点”。
-
 
 **2. 添加**
 
@@ -120,9 +129,11 @@ public boolean add(E e) {
     return offer(e);
 }
 ```
+
 说明：add()实际上是调用的offer()来完成添加操作的。
 
 offer()的源码如下：
+
 ```
 public boolean offer(E e) {
     // 检查e是不是null，是的话抛出NullPointerException异常。
@@ -153,6 +164,7 @@ public boolean offer(E e) {
     }
 }
 ```
+
 说明：offer(E e)的作用就是将元素e添加到链表的末尾。offer()比较的地方是理解for循环，下面区分3种情况对for进行分析。
 
 情况1 -- q为空。这意味着q是尾节点的下一个节点。此时，通过p.casNext(null, newNode)将“p的下一个节点设为newNode”，若设置成功的话，则比较“p和t”(若p不等于t，则设置newNode为新的尾节点)，然后返回true。否则的话(意味着“其它线程对尾节点进行了修改”)，什么也不做，继续进行for循环。
@@ -163,6 +175,7 @@ p.casNext(null, newNode)，是调用CAS对p进行操作。若“p的下一个节
 
 情况3 -- 其它。
 我们将p = (p != t && t != (t = tail)) ? t : q;转换成如下代码。
+
 ```
 if (p==t) {
     p = q;
@@ -176,6 +189,7 @@ if (p==t) {
     }
 }
 ```
+
 如果p和t相等，则设置p为q。否则的话，判断“尾节点是否发生变化”，没有变化的话，则设置p为q；否则，设置p为尾节点。
 
 checkNotNull()的源码如下：
@@ -186,6 +200,7 @@ private static void checkNotNull(Object v) {
         throw new NullPointerException();
 }
 ```
+
 **3. 删除**
 
 下面以poll()为例对ConcurrentLinkedQueue中的删除进行说明。
@@ -224,26 +239,31 @@ public E poll() {
     }
 }
 ```
+
 说明：poll()的作用就是删除链表的表头节点，并返回被删节点对应的值。poll()的实现原理和offer()比较类似，下面根将or循环划分为4种情况进行分析。
 
 情况1：“表头节点的数据”不为null，并且“设置表头节点的数据为null”这个操作成功。
 p.casItem(item, null) -- 调用CAS函数，比较“节点p的数据值”与item是否相等，是的话，设置节点p的数据值为null。
 在情况1发生时，先比较“p和h”，若p!=h，即表头发生了变化，则调用updateHead()更新表头；然后返回删除节点的item值。
 updateHead()的源码如下：
+
 ```
 final void updateHead(Node<E> h, Node<E> p) {
     if (h != p && casHead(h, p))
         h.lazySetNext(h);
 }
 ```
+
 说明：updateHead()的最终目的是更新表头为p，并设置h的下一个节点为h本身。
 casHead(h,p)是通过CAS函数设置表头，若表头等于h的话，则设置表头为p。
 lazySetNext()的源码如下：
+
 ```
 void lazySetNext(Node<E> val) {
     UNSAFE.putOrderedObject(this, nextOffset, val);
 }
 ```
+
 putOrderedObject()函数，我们在前面一章“TODO”中介绍过。h.lazySetNext(h)的作用是通过CAS函数设置h的下一个节点为h自身，该设置可能会延迟执行。
 
 情况2：如果表头的下一个节点为null，即链表只有一个“内容为null的表头节点”。
@@ -256,6 +276,7 @@ putOrderedObject()函数，我们在前面一章“TODO”中介绍过。h.lazyS
 设置p=q。
 
 ### ConcurrentLinkedQueue示例
+
 ```
 import java.util.*;
 import java.util.concurrent.*;
@@ -275,7 +296,7 @@ public class ConcurrentLinkedQueueDemo1 {
     //private static Queue<String> queue = new LinkedList<String>();
     private static Queue<String> queue = new ConcurrentLinkedQueue<String>();
     public static void main(String[] args) {
-    
+  
         // 同时启动两个线程对queue进行操作！
         new MyThread("ta").start();
         new MyThread("tb").start();
@@ -309,7 +330,9 @@ public class ConcurrentLinkedQueueDemo1 {
     }
 }
 ```
+
 其中一次运行结果：
+
 ```
 ta1, ta1, tb1, tb1,
 
@@ -324,4 +347,5 @@ ta4, ta1, tb4, tb1, ta5, ta2, tb5, tb2, ta6,
 ta3, ta1, tb3, tb1, ta4, ta2, tb4, tb2, ta5, ta3, tb5, tb3, ta6, ta4, tb6, 
 tb4, ta5, tb5, ta6, tb6,
 ```
+
 结果说明：如果将源码中的queue改成LinkedList对象时，程序会产生ConcurrentModificationException异常。

@@ -1,4 +1,5 @@
 ### **Java高级特性增强-并发容器**
+
 本部分网络上有大量的资源可以参考，在这里做了部分整理并做了大量勘误，感谢前辈的付出，每节文章末尾有引用列表~
 ####**多线程**
 ###**集合框架**
@@ -6,6 +7,7 @@
 ###**Java并发容器**
 
 ### 概要
+
 本章对Java.util.concurrent包中的ConcurrentSkipListMap类进行详细的介绍。内容包括：
 
 * ConcurrentSkipListMap介绍
@@ -14,13 +16,15 @@
 * ConcurrentSkipListMap源码分析
 * ConcurrentSkipListMap示例
 
-
 ### ConcurrentSkipListMap介绍
+
 ConcurrentSkipListMap是线程安全的有序的哈希表，适用于高并发的场景。
 ConcurrentSkipListMap和TreeMap，它们虽然都是有序的哈希表。但是，第一，它们的线程安全机制不同，TreeMap是非线程安全的，而ConcurrentSkipListMap是线程安全的。
 第二，ConcurrentSkipListMap是通过跳表实现的，而TreeMap是通过红黑树实现的。
 关于跳表(Skip List)，它是平衡树的一种替代的数据结构，但是和红黑树不相同的是，跳表对于树的平衡的实现是基于一种随机化的算法的，这样也就是说跳表的插入和删除的工作是比较简单的。
+
 ### ConcurrentSkipListMap原理和数据结构
+
 ConcurrentSkipListMap的数据结构，如下图所示：![7d7d48450f836bf600443210d6da0af4](大数据成神之路-Java高级特性增强(ConcurrentSkipListMap).resources/AA985055-21D7-47B9-B826-0BBF8CC3F359.jpg)
 **说明：**
 先以数据“7,14,21,32,37,71,85”序列为例，来对跳表进行简单说明。
@@ -39,6 +43,7 @@ ConcurrentSkipListMap的数据结构，如下图所示：![7d7d48450f836bf600443
 (03) Index是跳表中的索引，它包含“右索引的指针(right)”，“下索引的指针(down)”和“哈希表节点node”。node是Node的对象，Node也是ConcurrentSkipListMap中的内部类。
 
 ### ConcurrentSkipListMap函数列表
+
 ```
 // 构造一个新的空映射，该映射按照键的自然顺序进行排序。
 ConcurrentSkipListMap()
@@ -132,10 +137,13 @@ ConcurrentNavigableMap<K,V> tailMap(K fromKey, boolean inclusive)
 // 返回此映射中所包含值的 Collection 视图。
 Collection<V> values()
 ```
+
 ### ConcurrentSkipListMap源码分析
+
 下面从ConcurrentSkipListMap的添加，删除，获取这3个方面对它进行分析。
 **1. 添加**
 下面以put(K key, V value)为例，对ConcurrentSkipListMap的添加方法进行说明。
+
 ```
 public V put(K key, V value) {
     if (value == null)
@@ -143,8 +151,10 @@ public V put(K key, V value) {
     return doPut(key, value, false);
 }
 ```
+
 实际上，put()是通过doPut()将key-value键值对添加到ConcurrentSkipListMap中的。
 doPut()的源码如下：
+
 ```
 private V doPut(K kkey, V value, boolean onlyIfAbsent) {
     Comparable<? super K> key = comparable(kkey);
@@ -200,6 +210,7 @@ private V doPut(K kkey, V value, boolean onlyIfAbsent) {
     }
 }
 ```
+
 说明：doPut() 的作用就是将键值对添加到“跳表”中。
 要想搞清doPut()，首先要弄清楚它的主干部分 —— 我们先单纯的只考虑“单线程的情况下，将key-value添加到跳表中”，即忽略“多线程相关的内容”。它的流程如下：
 第1步：找到“插入位置”。
@@ -209,6 +220,7 @@ private V doPut(K kkey, V value, boolean onlyIfAbsent) {
 第3步：更新跳表。
 即，随机获取一个level，然后在“跳表”的第1层～第level层之间，每一层都插入节点z；在第level层之上就不再插入节点了。若level数值大于“跳表的层次”，则新建一层。
 主干部分“对应的精简后的doPut()的代码”如下(仅供参考)：
+
 ```
 private V doPut(K kkey, V value, boolean onlyIfAbsent) {
     Comparable<? super K> key = comparable(kkey);
@@ -218,7 +230,7 @@ private V doPut(K kkey, V value, boolean onlyIfAbsent) {
         // 设置n为key的后继节点
         Node<K,V> n = b.next;
         for (;;) {
-            
+          
             // 新建节点(对应是“要被插入的键值对”)
             Node<K,V> z = new Node<K,V>(kkey, value, n);
             // 设置“b的后继节点”为z
@@ -234,16 +246,20 @@ private V doPut(K kkey, V value, boolean onlyIfAbsent) {
     }
 }
 ```
+
 理清主干之后，剩余的工作就相对简单了。主要是上面几步的对应算法的具体实现，以及多线程相关情况的处理！
 **2. 删除**
 下面以remove(Object key)为例，对ConcurrentSkipListMap的删除方法进行说明。
+
 ```
 public V remove(Object key) {
     return doRemove(key, null);
 }
 ```
+
 实际上，remove()是通过doRemove()将ConcurrentSkipListMap中的key对应的键值对删除的。
 doRemove()的源码如下：
+
 ```
 final V doRemove(Object okey, Object value) {
     Comparable<? super K> key = comparable(okey);
@@ -299,6 +315,7 @@ final V doRemove(Object okey, Object value) {
     }
 }
 ```
+
 说明：doRemove()的作用是删除跳表中的节点。
 和doPut()一样，我们重点看doRemove()的主干部分，了解主干部分之后，其余部分就非常容易理解了。下面是“单线程的情况下，删除跳表中键值对的步骤”：
 第1步：找到“被删除节点的位置”。
@@ -308,6 +325,7 @@ final V doRemove(Object okey, Object value) {
 第3步：更新跳表。
 即，遍历跳表，删除每一层的“key节点”(如果存在的话)。如果删除“key节点”之后，跳表的层次需要-1；则执行相应的操作！
 主干部分“对应的精简后的doRemove()的代码”如下(仅供参考)：
+
 ```
 final V doRemove(Object okey, Object value) {
     Comparable<? super K> key = comparable(okey);
@@ -335,14 +353,18 @@ final V doRemove(Object okey, Object value) {
     }
 }
 ```
+
 **3. 获取**
 下面以get(Object key)为例，对ConcurrentSkipListMap的获取方法进行说明
+
 ```
 public V get(Object key) {
     return doGet(key);
 }
 ```
+
 doGet的源码如下：
+
 ```
 private V doGet(Object okey) {
     Comparable<? super K> key = comparable(okey);
@@ -357,7 +379,9 @@ private V doGet(Object okey) {
     }
 }
 ```
+
 说明：doGet()是通过findNode()找到并返回节点的。
+
 ```
 private Node<K,V> findNode(Comparable<? super K> key) {
     for (;;) {
@@ -395,6 +419,7 @@ private Node<K,V> findNode(Comparable<? super K> key) {
     }
 }
 ```
+
 说明：findNode(key)的作用是在返回跳表中key对应的节点；存在则返回节点，不存在则返回null。
 先弄清函数的主干部分，即抛开“多线程相关内容”，单纯的考虑单线程情况下，从跳表获取节点的算法。
 第1步：找到“被删除节点的位置”。
@@ -403,6 +428,7 @@ private Node<K,V> findNode(Comparable<? super K> key) {
 具体是通过比较“n的键值”和“key”的大小。如果相等，则n就是所要查找的键。
 
 ### ConcurrentSkipListMap示例
+
 ```
 import java.util.*;
 import java.util.concurrent.*;
@@ -420,7 +446,7 @@ public class ConcurrentSkipListMapDemo1 {
     //private static Map<String, String> map = new TreeMap<String, String>();
     private static Map<String, String> map = new ConcurrentSkipListMap<String, String>();
     public static void main(String[] args) {
-    
+  
         // 同时启动两个线程对map进行操作！
         new MyThread("a").start();
         new MyThread("b").start();
@@ -456,7 +482,9 @@ public class ConcurrentSkipListMapDemo1 {
     }
 }
 ```
+
 其中一次运行结果：
+
 ```
 (a1, 0), (a1, 0), (b1, 0), (b1, 0),
 
@@ -471,6 +499,7 @@ public class ConcurrentSkipListMapDemo1 {
 (b4, 0), (a1, 0), (b5, 0), (a2, 0), (b6, 0), 
 (a3, 0), (a4, 0), (a5, 0), (a6, 0), (b1, 0), (b2, 0), (b3, 0), (b4, 0), (b5, 0), (b6, 0),
 ```
+
 结果说明：
 示例程序中，启动两个线程(线程a和线程b)分别对ConcurrentSkipListMap进行操作。以线程a而言，它会先获取“线程名”+“序号”，然后将该字符串作为key，将“0”作为value，插入到ConcurrentSkipListMap中；接着，遍历并输出ConcurrentSkipListMap中的全部元素。 线程b的操作和线程a一样，只不过线程b的名字和线程a的名字不同。
 当map是ConcurrentSkipListMap对象时，程序能正常运行。如果将map改为TreeMap时，程序会产生ConcurrentModificationException异常。

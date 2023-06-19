@@ -1,4 +1,5 @@
 ### **Java高级特性增强-并发容器**
+
 本部分网络上有大量的资源可以参考，在这里做了部分整理并做了大量勘误，感谢前辈的付出，每节文章末尾有引用列表~
 
 ####**多线程**
@@ -10,21 +11,24 @@
 ###**Java并发容器**
 
 ### ArrayBlockingQueue介绍
+
 ArrayBlockingQueue是数组实现的线程安全的有界的阻塞队列。
 线程安全是指，ArrayBlockingQueue内部通过“互斥锁”保护竞争资源，实现了多线程对竞争资源的互斥访问。而有界，则是指ArrayBlockingQueue对应的数组是有界限的。 阻塞队列，是指多线程访问竞争资源时，当竞争资源已被某线程获取时，其它要获取该资源的线程需要阻塞等待；而且，ArrayBlockingQueue是按 FIFO（先进先出）原则对元素进行排序，元素都是从尾部插入到队列，从头部开始返回。
-
 
 注意:ArrayBlockingQueue不同于ConcurrentLinkedQueue，ArrayBlockingQueue是数组实现的，并且是有界限的;而ConcurrentLinkedQueue是链表实现的，是无界限的.
 
 ### ArrayBlockingQueue原理和数据结构
+
 ArrayBlockingQueue的数据结构，如下图所示：![7adae419f9a6f74c644642c6bda2673b](大数据成神之路-Java高级特性增强(ArrayBlockingQueue).resources/0BA99FFA-FAC7-470F-AB00-4523EDCCFF80.jpg)
-说明：    
-1. ArrayBlockingQueue继承于AbstractQueue，并且它实现了BlockingQueue接口。    
-2. ArrayBlockingQueue内部是通过Object[]数组保存数据的，也就是说ArrayBlockingQueue本质上是通过数组实现的。ArrayBlockingQueue的大小，即数组的容量是创建ArrayBlockingQueue时指定的。    
-3. ArrayBlockingQueue与ReentrantLock是组合关系，ArrayBlockingQueue中包含一个ReentrantLock对象(lock)。ReentrantLock是可重入的互斥锁，ArrayBlockingQueue就是根据该互斥锁实现“多线程对竞争资源的互斥访问”。而且，ReentrantLock分为公平锁和非公平锁，关于具体使用公平锁还是非公平锁，在创建ArrayBlockingQueue时可以指定；而且，ArrayBlockingQueue默认会使用非公平锁。    
+说明：   
+
+1. ArrayBlockingQueue继承于AbstractQueue，并且它实现了BlockingQueue接口。
+2. ArrayBlockingQueue内部是通过Object[]数组保存数据的，也就是说ArrayBlockingQueue本质上是通过数组实现的。ArrayBlockingQueue的大小，即数组的容量是创建ArrayBlockingQueue时指定的。
+3. ArrayBlockingQueue与ReentrantLock是组合关系，ArrayBlockingQueue中包含一个ReentrantLock对象(lock)。ReentrantLock是可重入的互斥锁，ArrayBlockingQueue就是根据该互斥锁实现“多线程对竞争资源的互斥访问”。而且，ReentrantLock分为公平锁和非公平锁，关于具体使用公平锁还是非公平锁，在创建ArrayBlockingQueue时可以指定；而且，ArrayBlockingQueue默认会使用非公平锁。
 4. ArrayBlockingQueue与Condition是组合关系，ArrayBlockingQueue中包含两个Condition对象(notEmpty和notFull)。而且，Condition又依赖于ArrayBlockingQueue而存在，通过Condition可以实现对ArrayBlockingQueue的更精确的访问 -- (01)若某线程(线程A)要取数据时，数组正好为空，则该线程会执行notEmpty.await()进行等待；当其它某个线程(线程B)向数组中插入了数据之后，会调用notEmpty.signal()唤醒“notEmpty上的等待线程”。此时，线程A会被唤醒从而得以继续运行。(02)若某线程(线程H)要插入数据时，数组已满，则该线程会它执行notFull.await()进行等待；当其它某个线程(线程I)取出数据之后，会调用notFull.signal()唤醒“notFull上的等待线程”。此时，线程H就会被唤醒从而得以继续运行。
 
 ### ArrayBlockingQueue函数列表
+
 ```
 // 创建一个带有给定的（固定）容量和默认访问策略的 ArrayBlockingQueue。
 ArrayBlockingQueue(int capacity)
@@ -72,10 +76,13 @@ Object[] toArray()
 // 返回此 collection 的字符串表示形式。
 String toString()
 ```
+
 ### ArrayBlockingQueue源码分析
+
 下面从ArrayBlockingQueue的创建，添加，取出，遍历这几个方面对ArrayBlockingQueue进行分析。
 **1. 创建**
 下面以ArrayBlockingQueue(int capacity, boolean fair)来进行说明。
+
 ```
 public ArrayBlockingQueue(int capacity, boolean fair) {
     if (capacity <= 0)
@@ -86,18 +93,23 @@ public ArrayBlockingQueue(int capacity, boolean fair) {
     notFull =  lock.newCondition();
 }
 ```
+
 说明：
 (01) items是保存“阻塞队列”数据的数组。它的定义如下：
+
 ```
 final Object[] items;
 ```
+
 (02) fair是“可重入的独占锁(ReentrantLock)”的类型。fair为true，表示是公平锁；fair为false，表示是非公平锁。
 notEmpty和notFull是锁的两个Condition条件。它们的定义如下：
+
 ```
 final ReentrantLock lock;
 private final Condition notEmpty;
 private final Condition notFull;
 ```
+
 Lock的作用是提供独占锁机制，来保护竞争资源；而Condition是为了更加精细的对锁进行控制，它依赖于Lock，通过某个条件对多线程进行控制。
 notEmpty表示“锁的非空条件”。当某线程想从队列中取数据时，而此时又没有数据，则该线程通过notEmpty.await()进行等待；当其它线程向队列中插入了元素之后，就调用notEmpty.signal()唤醒“之前通过notEmpty.await()进入等待状态的线程”。
 同理，notFull表示“锁的满条件”。当某线程想向队列中插入元素，而此时队列已满时，该线程等待；当其它线程从队列中取出元素之后，就唤醒该等待的线程。
@@ -105,6 +117,7 @@ notEmpty表示“锁的非空条件”。当某线程想从队列中取数据时
 **2. 添加**
 
 下面以offer(E e)为例，对ArrayBlockingQueue的添加方法进行说明。
+
 ```
 public boolean offer(E e) {
     // 创建插入的元素是否为null，是的话抛出NullPointerException异常
@@ -127,7 +140,9 @@ public boolean offer(E e) {
     }
 }
 ```
+
 说明：offer(E e)的作用是将e插入阻塞队列的尾部。如果队列已满，则返回false，表示插入失败；否则，插入元素，并返回true。(01) count表示”队列中的元素个数“。除此之外，队列中还有另外两个遍历takeIndex和putIndex。takeIndex表示下一个被取出元素的索引，putIndex表示下一个被添加元素的索引。它们的定义如下：
+
 ```
 // 下一个被添加元素的索引
 int takeIndex;
@@ -136,7 +151,9 @@ int putIndex;
 // 队列中的元素个数
 int count;
 ```
+
 (02) insert()的源码如下：
+
 ```
 private void insert(E x) {
     // 将x添加到”队列“中
@@ -149,16 +166,20 @@ private void insert(E x) {
     notEmpty.signal();
 }
 ```
+
 insert()在插入元素之后，会唤醒notEmpty上面的等待线程。inc()的源码如下：
+
 ```
 final int inc(int i) {
     return (++i == items.length) ? 0 : i;
 }
 ```
+
 若i+1的值等于“队列的长度”，即添加元素之后，队列满；则设置“下一个被添加元素的索引”为0。
 **3. 取出**
 
 下面以take()为例，对ArrayBlockingQueue的取出方法进行说明。
+
 ```
 public E take() throws InterruptedException {
     // 获取“队列的独占锁”
@@ -177,8 +198,10 @@ public E take() throws InterruptedException {
     }
 }
 ```
+
 说明：take()的作用是取出并返回队列的头。若队列为空，则一直等待。
 extract()的源码如下：
+
 ```
 private E extract() {
     final Object[] items = this.items;
@@ -195,16 +218,20 @@ private E extract() {
     return x;
 }
 ```
+
 说明：extract()在删除元素之后，会唤醒notFull上的等待线程。
 
 **4. 遍历**
 下面对ArrayBlockingQueue的遍历方法进行说明。
+
 ```
 public Iterator<E> iterator() {
     return new Itr();
 }
 ```
+
 Itr是实现了Iterator接口的类，它的源码如下：
+
 ```
 private class Itr implements Iterator<E> {
     // 队列中剩余元素的个数
@@ -285,7 +312,9 @@ private class Itr implements Iterator<E> {
     }
 }
 ```
+
 ### ArrayBlockingQueue示例
+
 ```
 import java.util.*;
 import java.util.concurrent.*;
@@ -301,7 +330,7 @@ public class ArrayBlockingQueueDemo1{
     //private static Queue<String> queue = new LinkedList<String>();
     private static Queue<String> queue = new ArrayBlockingQueue<String>(20);
     public static void main(String[] args) {
-    
+  
         // 同时启动两个线程对queue进行操作！
         new MyThread("ta").start();
         new MyThread("tb").start();
@@ -335,7 +364,9 @@ public class ArrayBlockingQueueDemo1{
     }
 }
 ```
+
 其中一次运行结果：
+
 ```
 ta1, ta1, 
 tb1, ta1, 
@@ -350,4 +381,5 @@ ta3, ta1, tb3, tb1, ta4, ta2, tb4, tb2, ta5, ta3, tb5,
 tb3, ta1, ta4, tb1, tb4, ta2, ta5, tb2, tb5, ta3, ta6, 
 tb3, ta4, tb4, ta5, tb5, ta6, tb6,
 ```
+
 结果说明：如果将源码中的queue改成LinkedList对象时，程序会产生ConcurrentModificationException异常。

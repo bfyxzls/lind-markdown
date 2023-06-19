@@ -7,7 +7,6 @@ tag: [itstack-demo-code,itstack-demo-any]
 excerpt: 往往简单的背后都有人为你承担着不简单，Spring 就是这样的家伙！而分析它的源码就像鬼吹灯，需要寻龙、点穴、分金、定位，最后往往受点伤(时间)、流点血(精力)、才能获得宝藏(成果)。
 lock: need
 ---
-
 # 源码分析 | 像盗墓一样分析Spring是怎么初始化xml并注册bean的
 
 作者：小傅哥
@@ -16,6 +15,7 @@ lock: need
 > 沉淀、分享、成长，让自己和他人都能有所收获！😄
 
 ## 一、前言介绍
+
 往往简单的背后都有人为你承担着不简单，Spring 就是这样的家伙！而分析它的源码就像鬼吹灯，需要寻龙、点穴、分金、定位，最后往往受点伤(时间)、流点血(精力)、才能获得宝藏(成果)。
 
 另外鉴于之前分析spring-mybatis、quartz，一篇写了将近2万字，内容过于又长又干，挖藏师好辛苦，看戏的也憋着肾，所以这次分析spring源码分块解读，便于理解、便于消化。
@@ -37,15 +37,16 @@ itstack-demo-code-spring
     │   ├── java
     │   │   └── org.itstack.demo
     │   │       └── UserService.java   
-    │   └── resources	
+    │   └── resources
     │       └── spring-config.xml
     └── test
          └── java
-             └── org.itstack.demo.test			
+             └── org.itstack.demo.test		
                  └── ApiTest.java
 ```
 
 ## 三、环境配置
+
 1. JDK 1.8
 2. IDEA 2019.3.1
 3. Spring 4.3.24.RELEASE
@@ -57,6 +58,7 @@ itstack-demo-code-spring
 ![微信公众号：bugstack虫洞栈 & 盗墓](https://bugstack.cn/assets/images/pic-content/2019/11/itstack-demo-code-spring-01.png)
 
 从上图的注册 bean 流程看到，核心类包括；
+
 - ClassPathXmlApplicationContext
 - AbstractXmlApplicationContext
 - AbstractRefreshableApplicationContext
@@ -70,7 +72,7 @@ itstack-demo-code-spring
 
 ### 1. 先扔个 helloworld 测试下
 
->UserService.java & 定义一个 bean，Spring 万物皆可 bean
+> UserService.java & 定义一个 bean，Spring 万物皆可 bean
 
 ```java
 public class UserService {
@@ -82,7 +84,7 @@ public class UserService {
 }
 ```
 
->spring-config.xml & 在 xml 配置 bean 内容
+> spring-config.xml & 在 xml 配置 bean 内容
 
 ```java
 <?xml version="1.0" encoding="UTF-8"?>
@@ -96,7 +98,7 @@ public class UserService {
 </beans>
 ```
 
->ApiTest.java & 单元测试类
+> ApiTest.java & 单元测试类
 
 ```java
 @Test
@@ -131,15 +133,15 @@ Process finished with exit code 0
 ```java
 @Test
 public void test_DocumentLoader() throws Exception {
-    
+  
 	// 设置资源
     EncodedResource encodedResource = new EncodedResource(new ClassPathResource("spring-config.xml"));
-    
+  
 	// 加载解析
     InputSource inputSource = new InputSource(encodedResource.getResource().getInputStream());
     DocumentLoader documentLoader = new DefaultDocumentLoader();
     Document doc = documentLoader.loadDocument(inputSource, new ResourceEntityResolver(new PathMatchingResourcePatternResolver()), new DefaultHandler(), 3, false);
-    
+  
 	// 输出结果
     Element root = doc.getDocumentElement();
     NodeList nodeList = root.getChildNodes();
@@ -153,7 +155,7 @@ public void test_DocumentLoader() throws Exception {
         String scope = ele.getAttribute("scope");
         logger.info("测试结果 beanName：{} beanClass：{} scope：{}", id, clazz, scope);
     }
-	
+
 }
 ```
 
@@ -204,7 +206,7 @@ Process finished with exit code 0
 
 ### 3. ClassPathXmlApplicationContext 构造函数初始化过程
 
->ClassPathXmlApplicationContext.java & 截取部分代码
+> ClassPathXmlApplicationContext.java & 截取部分代码
 
 ```java
 public ClassPathXmlApplicationContext(String[] configLocations, boolean refresh, ApplicationContext parent)
@@ -220,9 +222,9 @@ public ClassPathXmlApplicationContext(String[] configLocations, boolean refresh,
 - **源码139行：** setConfigLocations 设置我们的配置的资源位置信息
 - 重点在 refresh() 这个方法里面内容非常多，随着文章的编写会陆续分析。
 
-### 4. AbstractApplicationContext 初始化工厂 
+### 4. AbstractApplicationContext 初始化工厂
 
->AbstractApplicationContext.java & 部分代码截取
+> AbstractApplicationContext.java & 部分代码截取
 
 ```java
 @Override
@@ -230,7 +232,7 @@ public void refresh() throws BeansException, IllegalStateException {
 	synchronized (this.startupShutdownMonitor) {
 		// 设置容器初始化
 		prepareRefresh();
-		
+	
 		// 让子类进行 BeanFactory 初始化，并且将 Bean 信息 转换为 BeanFinition，最后注册到容器中
 		// 注意，此时 Bean 还没有初始化，只是配置信息都提取出来了
 		ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
@@ -242,7 +244,7 @@ public void refresh() throws BeansException, IllegalStateException {
 
 - **源码514行：** 这一行是我们重点往后分析的内容，它主要开始处理 xml 中 bean 的初始化过程，但此时不会注册，意思就是你通过 beanFactory.getBean 还获得不到内容
 
->AbstractApplicationContext.java & 部分代码截取
+> AbstractApplicationContext.java & 部分代码截取
 
 ```java
 protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
@@ -260,7 +262,7 @@ protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
 
 ### 5. AbstractRefreshableApplicationContext 刷新上下文
 
->AbstractRefreshableApplicationContext.java & 部分代码截取
+> AbstractRefreshableApplicationContext.java & 部分代码截取
 
 ```java
 protected final void refreshBeanFactory() throws BeansException {
@@ -288,19 +290,19 @@ protected final void refreshBeanFactory() throws BeansException {
 
 ### 6. AbstractXmlApplicationContext xml配置处理
 
->AbstractXmlApplicationContext.java & 部分代码截取
+> AbstractXmlApplicationContext.java & 部分代码截取
 
 ```java
 protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws BeansException, IOException {
 	// Create a new XmlBeanDefinitionReader for the given BeanFactory.
 	XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
-	
+
 	// Configure the bean definition reader with this context's
 	// resource loading environment.
 	beanDefinitionReader.setEnvironment(this.getEnvironment());
 	beanDefinitionReader.setResourceLoader(this);
 	beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
-	
+
 	// Allow a subclass to provide custom initialization of the reader,
 	// then proceed with actually loading the bean definitions.
 	initBeanDefinitionReader(beanDefinitionReader);
@@ -311,7 +313,7 @@ protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throw
 - **源码82行：** XmlBeanDefinitionReader 定义配置文件读取类，并设置基础的属性信息，getEnvironment、ResourceEntityResolver
 - **源码93行：** loadBeanDefinitions 在拿到 beanDefinitionReader 继续执行
 
->AbstractXmlApplicationContext.java & 部分代码截取
+> AbstractXmlApplicationContext.java & 部分代码截取
 
 ```java
 protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansException, IOException {
@@ -331,7 +333,7 @@ protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansE
 
 ### 7. AbstractBeanDefinitionReader 配置文件加载
 
->AbstractBeanDefinitionReader.java & 部分代码截取
+> AbstractBeanDefinitionReader.java & 部分代码截取
 
 ```java
 public int loadBeanDefinitions(String... locations) throws BeanDefinitionStoreException {
@@ -347,7 +349,7 @@ public int loadBeanDefinitions(String... locations) throws BeanDefinitionStoreEx
 - 抽象类是中提供了加载解析的方法，每解析一组就计数一次
 - **源码252行：** loadBeanDefinitions(location) 循环加载 bean 的定义进行解析
 
->AbstractBeanDefinitionReader.java & 部分代码截取
+> AbstractBeanDefinitionReader.java & 部分代码截取
 
 ```java
 public int loadBeanDefinitions(String location) throws BeanDefinitionStoreException {
@@ -357,7 +359,7 @@ public int loadBeanDefinitions(String location) throws BeanDefinitionStoreExcept
 
 - 类内部提供的单个解析方法，没有什么特别。继续往下
 
->AbstractBeanDefinitionReader.java & 部分代码截取
+> AbstractBeanDefinitionReader.java & 部分代码截取
 
 ```java
 public int loadBeanDefinitions(String location, Set<Resource> actualResources) throws BeanDefinitionStoreException {
@@ -366,7 +368,7 @@ public int loadBeanDefinitions(String location, Set<Resource> actualResources) t
 		throw new BeanDefinitionStoreException(
 				"Cannot import bean definitions from location [" + location + "]: no ResourceLoader available");
 	}
-	
+
 	if (resourceLoader instanceof ResourcePatternResolver) {
 		// Resource pattern matching available.
 		try {
@@ -406,14 +408,14 @@ public int loadBeanDefinitions(String location, Set<Resource> actualResources) t
 
 ### 8. XmlBeanDefinitionReader 配置解析
 
->XmlBeanDefinitionReader.java & 部分代码截取
+> XmlBeanDefinitionReader.java & 部分代码截取
 
 ```java
 public int loadBeanDefinitions(EncodedResource encodedResource) throws BeanDefinitionStoreException {
-	
+
 	// 判断验证
 	...
-	
+
 	try {
 		InputStream inputStream = encodedResource.getResource().getInputStream();
 		try {
@@ -444,7 +446,7 @@ public int loadBeanDefinitions(EncodedResource encodedResource) throws BeanDefin
 
 ### 9. XmlBeanDefinitionReader 配置文件读取
 
->XmlBeanDefinitionReader.java & 部分代码截取
+> XmlBeanDefinitionReader.java & 部分代码截取
 
 ```java
 protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
@@ -453,7 +455,7 @@ protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
 		Document doc = doLoadDocument(inputSource, resource);
 		return registerBeanDefinitions(doc, resource);
 	} catch(){}
-	
+
 }
 ```
 
@@ -462,7 +464,7 @@ protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
 
 ### 10. DefaultBeanDefinitionDocumentReader 定义bean类
 
->DefaultBeanDefinitionDocumentReader.java  & 部分代码截取
+> DefaultBeanDefinitionDocumentReader.java  & 部分代码截取
 
 ```java
 public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext) {
@@ -475,7 +477,7 @@ public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext
 
 - **源码93行：** 越来越熟悉了吧，开始获取节点元素了，也就可以获取 bean 信息
 
->DefaultBeanDefinitionDocumentReader.java & 部分代码截取
+> DefaultBeanDefinitionDocumentReader.java & 部分代码截取
 
 ```java
 protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate deleg
@@ -503,7 +505,7 @@ protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate d
 - NodeList 循环处理节点内容，开启注册
 - **源码169行：** parseDefaultElement(ele, delegate); 解析元素操作
 
->DefaultBeanDefinitionDocumentReader.java & 部分代码截取
+> DefaultBeanDefinitionDocumentReader.java & 部分代码截取
 
 ```java
 private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
@@ -526,7 +528,7 @@ private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate deleg
 - 这个方法会根据不同的节点类型；IMPORT_ELEMENT、ALIAS_ELEMENT、BEAN_ELEMENT、NESTED_BEANS_ELEMENT，进行不同的操作
 - **源码190行：** 这里我们只需要关注 processBeanDefinition(ele, delegate) 即可，处理 bean 操作
 
->DefaultBeanDefinitionDocumentReader.java & 部分代码截取
+> DefaultBeanDefinitionDocumentReader.java & 部分代码截取
 
 ```java
 protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
@@ -552,17 +554,17 @@ protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate d
 
 ### 11. BeanDefinitionReaderUtils bean注册工具类
 
->BeanDefinitionReaderUtils.java & 部分代码截取
+> BeanDefinitionReaderUtils.java & 部分代码截取
 
 ```java
 public static void registerBeanDefinition(
 		BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)
 		throws BeanDefinitionStoreException {
-	
+
 	// Register bean definition under primary name.
 	String beanName = definitionHolder.getBeanName();
 	registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
-	
+
 	// Register aliases for bean name, if any.
 	String[] aliases = definitionHolder.getAliases();
 	if (aliases != null) {
@@ -577,15 +579,15 @@ public static void registerBeanDefinition(
 
 ### 12. DefaultListableBeanFactory bean核心注册中心
 
->DefaultListableBeanFactory.java & 部分代码截取
+> DefaultListableBeanFactory.java & 部分代码截取
 
 ```java
 public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
 		throws BeanDefinitionStoreException {
-	
+
 	Assert.hasText(beanName, "Bean name must not be empty");
 	Assert.notNull(beanDefinition, "BeanDefinition must not be null");
-	
+
 	if (beanDefinition instanceof AbstractBeanDefinition) {
 		try {
 			((AbstractBeanDefinition) beanDefinition).validate();
@@ -595,15 +597,15 @@ public void registerBeanDefinition(String beanName, BeanDefinition beanDefinitio
 					"Validation of bean definition failed", ex);
 		}
 	}
-	
+
 	BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 	if (existingDefinition != null) {
 		...
 	}
 	else {
-		
+	
 		...
-		
+	
 		else {
 			// Still in startup registration phase
 			this.beanDefinitionMap.put(beanName, beanDefinition);
@@ -619,19 +621,12 @@ public void registerBeanDefinition(String beanName, BeanDefinition beanDefinitio
 ```
 
 - **源码853行：** 这就是最终我们将 xml 中的配置信息注册到了配置中心，beanDefinitionMap，同时还会写入到 beanDefinitionNames
-
 - 看下最终的注入结果，嗯！我们的盗墓挖到了一点宝物；
 
-	![微信公众号：bugstack虫洞栈 & bean注册结果](https://bugstack.cn/assets/images/pic-content/2019/11/itstack-demo-code-spring-04.png)
-
+  ![微信公众号：bugstack虫洞栈 & bean注册结果](https://bugstack.cn/assets/images/pic-content/2019/11/itstack-demo-code-spring-04.png)
 
 ## 五、综上总结
 
 - 陈玉楼的盗墓(源码分析)，初步确定了路线、墓室、干掉了蜈蚣，今天大家胜利而归，开始收拾整理装备
 - 源码分析真的就像盗墓一样，分析前一切都是陌生的，一遍遍的分析后会从里面不断的获取宝藏，这个宝藏的多少取决你对他的挖掘深度
 - 本次只是简单的分析了一个 xml 中配置的 bean 注册的过程，此时还没有真正的生成 bean，等下篇文章继续分析
-
-
-
-
-
