@@ -1,6 +1,4 @@
 
-R
-"分布式事务/分布式事务.md,0\d\0dce584c42b06fda9bf34f30a2b3809b1f516f7e
 M
 redis/Redisson的看门狗.md,0\a\0a2e2d46026374627c73f1784c5a982fc847cc39
 B
@@ -51,10 +49,6 @@ N
 数据库/Mysql分库分表.md,1\8\1847eea6156d8c367fdc2732f0e0f0b19e1a1e2f
 O
 数据库/负载均衡方案.md,d\7\d70bcb50c8f666a137005a4617fcbcb0985e8782
-Q
-!数据库/Mysql高可用集群.md,5\7\57a7362f8ca23f24a15027e81c07bf599469c6a3
-M
-数据库/HAProxy的部署.md,3\b\3be921f1878e0968067b587e5636b352809bbaf5
 O
 golang/Go 语言参考手册.md,d\9\d90b26505f1adf9d5e3adfad19ce75f4afaed4a5
 M
@@ -67,8 +61,6 @@ F
 python/基础教程.md,5\1\511cd94a907ab40b6ce0cf9db4c202d2323ff4c7
 G
 其它语言/c语言.md,f\c\fca5ba1ee9c205cc09e8d603644e1df0b1c2a6d5
-F
-其它语言/groovy.md,d\d\ddc08b861bdec36186b3072611ce3df3775561aa
 G
 其它语言/kubectl.md,9\d\9dadb9bae571fca5e30170975fe5f2eed67019ae
 H
@@ -153,3 +145,59 @@ X
 java/JavaMap.md,9\9\99d921d279ea52107a53a00b16ac92473539e37b
 @
 java/JavaLock.md,6\7\6737450303a92f3b5bd0ccb5d82402e8b510d931
+K
+java/基础编程/Stream.md,4\1\41442663c8a97677fbd876322f97da3b66a17cf4
+M
+java/基础编程/文件IO.md,5\8\58dea279e5360effcf8dacac1f7c6eb0fdc52708
+E
+java/NIO/NIO概览.md,b\1\b1295ce3ecc9a93bf8bd3d2fe16d5250078e7d67
+Z
+*java/基础编程/字节流和字符流.md,8\6\864857ed695a4def86ebcc69e6dcc3e16f12ab4e
+E
+spring/nacos相关.md,2\2\22b2ef0f10e3d9be5614bf0e7f20ec8a83afa7ce
+e
+5分布式理论/分布式系统理论基础二-CAP.md,9\7\97f39c3144710bd3665cf72f8917b924ab51cfe1
+F
+分布式理论/cap.md,9\2\92dad6281d9c2472871b60e002c6f15233d97207
+k
+;分布式理论/分布式系统理论进阶 - Raft、Zab.md,f\7\f790ee932c4c2707f5031d21837baf5013c4cc52
+M
+分布式理论/raft概述.md,7\b\7bcc945bfe7dd6da6935db954b11def91a99f819
+T
+$java/基础编程/无符号类型.md,8\a\8a18ec1e333b0cef9edf5b68b1aee9a7fbb1d529
+V
+&java/基础编程/char和byte类型.md,2\7\277d272d15c21e9f3e9aeb21a6bfd537bf0c78c8
+M
+数据库/HAProxy的部署.md,3\b\3be921f1878e0968067b587e5636b352809bbaf5
+Q
+!数据库/Mysql高可用集群.md,5\7\57a7362f8ca23f24a15027e81c07bf599469c6a3
+K
+容器化/k8s/pod/README.md,c\9\c927e93b725c23362f4f153b3c94684a488eea9d
+B
+容器化/istio.md,8\a\8a5df7dff99ac28786a80de468742463f8f40849
+R
+"容器化/k8s/controller/README.md,1\5\156f3ea18d7a2617ee936f9af8db3e0f92a8a3c1
+[
++容器化/k8s/service/external-service.yaml,4\e\4e699594e45ef39f2bc00808d8dd3bd575d650e7
+S
+#容器化/k8s/statefulset/README.md,b\9\b9cafa8399f0d57a8429b254dc79660ef6a16d9e
+S
+#容器化/k8s/statefulset/es-pv.yml,2\2\221ad095506729bd2b42eb945200fba5f575dfba
+F
+其它语言/groovy.md,d\d\ddc08b861bdec36186b3072611ce3df3775561aa
+M
+network_protocol/运输层.md,8\1\81c015063564ee55f6abb890e9af0f0e932e8dc2
+T
+$大数据/实战系列文章/OLAP.md,f\5\f5377e539a4697a9a23d1cb30ef6e4c87e8f7b6b
+[
++大数据/实战系列文章/Spark实战.md,e\9\e97cbec77944ac6f6ec7930b4ee3cdb9f13d84a1
+R
+"分布式事务/分布式事务.md,0\d\0dce584c42b06fda9bf34f30a2b3809b1f516f7e
+~
+N设计模式/2020-06-30-重学 Java 设计模式《实战观察者模式》.md,1\a\1aca04caa908294db9ec444bf1750026c9b9537d
+I
+前端/浏览器指纹.md,a\1\a1e853e9f9f04ae0dba3331359c6c15c0c3e68c9
+a
+1设计模式/Spring框架用到的设计模式.md,2\d\2d167890a39ba656c062b82edbbce0ce310aac3d
+Q
+!java/guava之限流RateLimiter.md,4\a\4a14532f4b4b0104b1312fd0e36e656a9b83c6eb
