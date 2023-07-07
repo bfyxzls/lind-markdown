@@ -67,8 +67,6 @@ H
 算法/Netty时间轮.md,b\a\ba033b8c2c8b3b0a745d244cb1b0b38bc2704459
 9
 	README.md,8\e\8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
-D
-spring/SprintBean.md,0\1\014d8dd557522cbaa9c5080abc676c8918f81fd3
 C
 算法/红包雨.md,d\0\d0ee3047f1bc5f97ba1b00322bf508e2f8610f48
 Q
@@ -171,8 +169,6 @@ M
 数据库/HAProxy的部署.md,3\b\3be921f1878e0968067b587e5636b352809bbaf5
 Q
 !数据库/Mysql高可用集群.md,5\7\57a7362f8ca23f24a15027e81c07bf599469c6a3
-K
-容器化/k8s/pod/README.md,c\9\c927e93b725c23362f4f153b3c94684a488eea9d
 B
 容器化/istio.md,8\a\8a5df7dff99ac28786a80de468742463f8f40849
 R
@@ -201,3 +197,21 @@ a
 1设计模式/Spring框架用到的设计模式.md,2\d\2d167890a39ba656c062b82edbbce0ce310aac3d
 Q
 !java/guava之限流RateLimiter.md,4\a\4a14532f4b4b0104b1312fd0e36e656a9b83c6eb
+F
+容器化/阿里MSE.md,1\8\18cea693cbe02584f08252422f7fbc4511a2531e
+S
+#java/基础编程/ReferenceQueue.md,5\2\52dc652c67c8c01e1a28d4bc6e6b56a5c0e02f77
+K
+java/基础编程/Socket.md,e\7\e71994194b045e2ef7c695a1d7dffa7ceedca231
+G
+算法/trie前缀树.md,3\4\34ef60e2fdf2c272b4fd027e13d0a1d9df4a26be
+;
+markdown.md,f\8\f8344a2def1a795277e43e037d4495236a33fd4d
+D
+spring/annotation.md,4\7\47d3e42c6aec39dfa935531bc0eede5d419d3aeb
+D
+spring/SpringBean.md,b\3\b33bb4d9cad3c91805e849dee17d587be06c91c9
+K
+容器化/k8s/pod/README.md,c\9\c927e93b725c23362f4f153b3c94684a488eea9d
+I
+容器化/反亲和性.md,7\0\70292c6dfca8f289d1c8a5d896f938ec85ab7482
