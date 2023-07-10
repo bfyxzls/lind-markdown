@@ -17,7 +17,8 @@
 # lind-start-framework项目目录
 
 > 以lind开头，以start结尾的项目，是其它项目的基础包
-> ![](./assets/lind-framework-1688975720361.png)
+
+![](./assets/lind-framework-1688975720361.png)
 
 * lind-framework-bom lind组件和相关依赖清单，需要使用lind组件，需要import这个包
 * lind-framework 组件包
