@@ -112,3 +112,43 @@ public class AppConfig {
 另外，当使用`@EnableConfigurationProperties`注解时，还需要确保目标类（例如`MyAppProperties`）已经被标记为`@Component`或`@Configuration`等注解，以使其成为一个Spring Bean。
 
 总结一下，`@EnableConfigurationProperties`注解用于启用使用`@ConfigurationProperties`注解定义的类作为配置属性的绑定类，并将其实例化为Spring Bean，以便在应用程序中使用。
+
+# @EnableGlobalMethodSecurity(prePostEnabled = true)这句话的作用
+`@EnableGlobalMethodSecurity(prePostEnabled = true)`这句话的作用是在Spring应用程序中启用方法级别的安全性。
+
+通过在Spring应用程序的配置类中添加这个注解，你可以使用Spring Security的`@PreAuthorize`和`@PostAuthorize`注解来对单个方法进行访问控制。
+
+其中，`prePostEnabled = true`参数特别用于启用`@PreAuthorize`和`@PostAuthorize`注解的使用。通过`@PreAuthorize`注解，你可以指定在方法调用之前要评估的表达式，以确定用户是否有权限访问该方法。类似地，`@PostAuthorize`用于指定在方法执行后要评估的表达式，以验证返回结果。
+
+下面是一个使用`@EnableGlobalMethodSecurity`的配置类示例：
+
+```java
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class SecurityConfig extends GlobalMethodSecurityConfiguration {
+
+    @Autowired
+    private CustomPermissionEvaluator customPermissionEvaluator;
+
+    @Override
+    protected MethodSecurityExpressionHandler createExpressionHandler() {
+        DefaultMethodSecurityExpressionHandler expressionHandler =
+            new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setPermissionEvaluator(customPermissionEvaluator);
+        return expressionHandler;
+    }
+}
+```
+
+在上面的示例中，`SecurityConfig`是一个配置类，用于启用全局方法安全性。它扩展了`GlobalMethodSecurityConfiguration`类，以提供一个自定义的`MethodSecurityExpressionHandler`，负责评估`@PreAuthorize`和`@PostAuthorize`注解中使用的表达式。`CustomPermissionEvaluator`是`PermissionEvaluator`接口的自定义实现，用于处理表达式中的权限评估。
+
+通过启用全局方法安全性，你可以在方法上使用`@PreAuthorize`和`@PostAuthorize`注解，根据这些注解中定义的表达式来控制访问权限。
+
+# 在spring.factory里声明的类，还需要在类上面添加@Component吗
+在Spring的应用中，`@Component`注解用于将一个类声明为Spring管理的组件，让Spring能够自动扫描并将其实例化为Bean。但是，对于在`spring.factory`文件中声明的类，你不需要再在类上添加`@Component`注解。
+
+`spring.factory`是Spring Boot自动生成的一个配置文件，它用于收集应用中的所有`@Configuration`类和其他一些特定的注解类，例如`@EnableAutoConfiguration`和`@ComponentScan`等。这些类都被Spring Boot自动识别并加载。
+
+当Spring Boot扫描到`spring.factory`文件中的类时，它会自动创建相应的Bean并添加到应用的上下文中，无需额外的`@Component`注解。
+
+总结起来，对于在`spring.factory`文件中声明的类，不需要再在类上添加`@Component`注解，Spring Boot会自动处理它们的实例化和管理。

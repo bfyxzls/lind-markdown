@@ -141,13 +141,11 @@ store {
 
 # Seata 基本概念
 
-AT 模式
+## AT 模式
 
-TM: 事务的发起者, 通常是业务入口的微服务, 如果该服务连接了数据库, 该服务会同时充当TM 和 RM
-
-TC: 事务协调者, 即独立部署的 seata-server, 支持集, 也需要自己的一个数据库来管理事务
-
-RM: 资源管理器, 数据库的入口,
+* TM: 事务的发起者, 通常是业务入口的微服务, 如果该服务连接了数据库, 该服务会同时充当TM 和 RM
+* TC: 事务协调者, 即独立部署的 seata-server, 支持集, 也需要自己的一个数据库来管理事务
+* RM: 资源管理器, 数据库的入口,
 
 ## AT 模式的隔离原理
 
@@ -283,7 +281,7 @@ ps: oracle同理;1.2.0支持mysql驱动多版本隔离，无需再添加驱动
 
 `@Transactional` 可与 DataSourceTransactionManager 和  JTATransactionManager 连用, 分别表示本地事务和XA分布式事务，大家常用的是与本地事务结合。
 
-当与本地事务结合时，`@Transactional`和`@GlobalTransaction`连用，`@Transactional` 只能位于标注在`@GlobalTransaction`的同一方法层次或者位于`@GlobalTransaction`  标注方法的**内层**。这里分布式事务的概念要大于本地事务，若将 `@Transactional`  标注在外层会导致分布式事务空提交，当`@Transactional` 对应的 connection  提交时会报全局事务正在提交或者全局事务的xid不存在。
+当与本地事务结合时，`@Transactional`和`@GlobalTransaction`连用，`@Transactional` 只能位于标注在 `@GlobalTransaction`的同一方法层次或者位于`@GlobalTransaction`  标注方法的**内层**。这里分布式事务的概念要大于本地事务，若将 `@Transactional`  标注在外层会导致分布式事务空提交，当`@Transactional` 对应的 connection  提交时会报全局事务正在提交或者全局事务的xid不存在。
 
 ### Q: 24. SpringCloud xid无法传递 ？
 
