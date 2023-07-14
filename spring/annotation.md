@@ -152,3 +152,12 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration {
 当Spring Boot扫描到`spring.factory`文件中的类时，它会自动创建相应的Bean并添加到应用的上下文中，无需额外的`@Component`注解。
 
 总结起来，对于在`spring.factory`文件中声明的类，不需要再在类上添加`@Component`注解，Spring Boot会自动处理它们的实例化和管理。
+
+# @NoRepositoryBean的作用
+在Java中，@NoRepositoryBean是Spring Data JPA框架中的一个注解。它的作用是标记一个接口，告诉Spring Data JPA不要为该接口创建任何实例。
+
+通常情况下，当使用Spring Data JPA时，我们定义一个接口来表示数据访问层的存储库（repository）。Spring Data JPA会根据这些接口的定义自动生成相应的实现，以提供基本的CRUD操作和其他常见的数据库操作。但有时候，我们可能希望定义一些公共的接口，用于扩展其他具体的存储库接口，而不希望Spring Data JPA为这些公共接口生成实现。
+
+这时，我们可以使用@NoRepositoryBean注解来标记这些公共接口，告诉Spring Data JPA不要为其创建实例。这样，其他具体的存储库接口就可以继承这些公共接口，获取到其定义的方法，然后自己提供实现。@NoRepositoryBean注解的存在使得Spring Data JPA只为那些没有被标记的接口生成实例。
+
+总结来说，@NoRepositoryBean的作用是告诉Spring Data JPA不要为标记的接口生成实例，这些接口通常是用于扩展其他具体存储库接口的公共接口。
