@@ -58,6 +58,7 @@
 * Client Session Idle[/ˈaɪd(ə)l/]
 * Client Session Max
 * 以上4个配置，谁小refresh_expires_in使用谁
+> 在keycloak管理后台，有个会话管理，或者在每个用户详情里，有个会话标签，这里记录的没有被删除的session_id，这里的session_id的生命周期与refresh_token的生命周期是一致的，但并不是说，在这里显示的session_id就一定没有过期，因为这个列表中的session_id有个删除规则，这个规则的时间是`全局的刷新token的时间`，比如（realms下面tokens在选项卡里的4个配置）你的token已经过期，去通过刷新token换也已经过期，那这个列表里的session_id就会被删除，例如：全局刷新token过期时间为5分钟，那么你18点登录的，在`18：05`分你需要从新去登录。
 
 #### KC配置里，expires_in谁小使用谁
 * KC配置里的Access Token Lifespan用来配置token的过期时间
