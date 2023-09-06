@@ -1,6 +1,14 @@
 本文是由code4craft发表在博客上的，原文基于Netty3.7的版本，源码部分对buffer、Pipeline、Reactor模式等进行了部分讲解，个人又继续新增了后续的几个核心组件的源码解读，新增了具体的案例。
 Netty的源码非常好，质量极高，是Java中质量最高的开源项目之一，(比Spring系列源码高几层楼...)
 我十分建议大家花上一周时间自习读一读。
+ 
+* reactor: 把i/o事件分发缎带对应的handler
+  * 单线程reactor模型
+  * 多线程reactor模型
+  * 主从多reactor多线程模型
+* acceptor: 处理客户连接请求
+* handlers:执行非阻塞读/写，也就是针对收到的消息进行业务处理
+* 
 
 ## 概述
 
