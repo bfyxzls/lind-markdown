@@ -1,6 +1,6 @@
-*.js linguist-language=Markdown
-*.css linguist-language=Markdown
-*.html linguist-language=Markdown
-*.md linguist-language=Markdown
-*.png linguist-language=Markdown
-*.jpg linguist-language=Markdown
+*.js linguist-language=java
+*.css linguist-language=java
+*.html linguist-language=java
+*.md linguist-language=java
+*.png linguist-language=java
+*.jpg linguist-language=java
